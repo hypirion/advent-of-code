@@ -1,10 +1,11 @@
 # Advent of Code 2018
 
-Advent of Code 2018 attempts to solve every problem in a different language.
+For this year, I will attempt to solve every Advent of Code problem in a different language.
 
 ## Status
 
 1. Bash and Crystal
+2. Julia and Fennel
 
 # License
 
