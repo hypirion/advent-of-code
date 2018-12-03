@@ -6,6 +6,7 @@ For this year, I will attempt to solve every Advent of Code problem in a differe
 
 1. Bash and Crystal
 2. Julia and Fennel
+3. Mirah
 
 # License
 
