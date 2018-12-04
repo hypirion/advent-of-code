@@ -1,12 +1,14 @@
 # Advent of Code 2018
 
-For this year, I will attempt to solve every Advent of Code problem in a different language.
+This year, I will attempt to solve every Advent of Code problem without using
+any language twice.
 
 ## Status
 
 1. Bash and Crystal
 2. Julia and Fennel
 3. Mirah and Dart
+4. Myrddin
 
 # License
 

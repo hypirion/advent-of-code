@@ -1,0 +1,137 @@
+/*
+   A program to compute Advent Of Code, problem 4-1 2018.
+   Copyright (C) 2018 Jean Niklas L'orange
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+use std
+use bio
+use regex
+use date
+
+const intify = { val : byte[:];
+  -> std.get(std.intparse(val))
+}
+
+const parsetime = { m : byte[:][:];
+  -> date.mkdatetime(intify(m[0]), intify(m[1]), intify(m[2]), intify(m[3]), intify(m[4]), 0, "UTC")
+}
+
+type newguard = struct
+  tm : date.instant
+  id : int
+;;
+
+type event = union
+  `NewGuard newguard
+  `FellAsleep date.instant
+  `WokeUp date.instant
+;;
+
+const mkevent = { ln : byte[:];
+  var evt
+  /* this regex depends on bugfix in library not ported upstream yet */
+  var re = std.try(regex.compile("\\[(\\d+)-(\\d+)-(\\d+) (\\d+):(\\d+)\\] (.+)"))
+  var matches = std.get(regex.exec(re, ln))
+  var time = parsetime(matches[1:6])
+  var last = matches[6]
+  if std.hasprefix(last, "falls asleep")
+    evt = `FellAsleep time
+  elif std.hasprefix(last, "wakes up")
+    evt = `WokeUp time
+  else
+    var guardmatch = std.try(regex.compile("Guard #(\\d+) begins shift"))
+    var m2 = std.get(regex.exec(guardmatch, last))
+    evt = `NewGuard [.tm = time, .id = intify(m2[1])]
+    regex.matchfree(m2)
+    regex.free(guardmatch)
+  ;;
+  regex.matchfree(matches)
+  regex.free(re)
+  -> evt
+}
+
+const eventtime = { evt : event ;
+  match evt
+  | `NewGuard ng: -> ng.tm
+  | `FellAsleep tm: -> tm
+  | `WokeUp tm: -> tm
+  ;;
+}
+
+const eventcmp = { a, b
+  var t1 = eventtime(a)
+  var t2 = eventtime(b)
+  if t1.actual < t2.actual
+    -> `std.Before
+  elif t1.actual == t2.actual
+    -> `std.Equal
+  else
+    -> `std.After
+  ;;
+}
+
+const main = {
+  var sl = std.slalloc(0)
+  var f = bio.mkfile(std.In, bio.Rd)
+  for ln : bio.byline(f)
+    std.slpush(&sl, mkevent(ln))
+  ;;
+  std.sort(sl, eventcmp)
+  var scheds = std.mkht()
+  var curguard = 0 /* dummy value to bypass compiler check (good compiler tho) */
+  var curtime = date.now("UTC") /* same here */
+  for evt : sl
+    match evt
+    | `NewGuard g:
+      curguard = g.id
+      if !std.hthas(scheds, g.id)
+        std.htput(scheds, g.id, std.slzalloc(60))
+      ;;
+    | `FellAsleep t:
+      curtime = t
+    | `WokeUp t:
+      var sched = std.get(std.htget(scheds, curguard))
+      for var i = curtime.m; i < t.m; i++
+        sched[i]++
+      ;;
+    ;;
+  ;;
+  var keys = std.htkeys(scheds)
+  var sleepsum = 0
+  var best_tot_sleep = 0
+  for key : keys
+    var sched = std.get(std.htget(scheds, key))
+    var cur_tot_sleep = 0
+    var cur_max_sleep = 0
+    var cur_max_sleep_idx = 0
+    for var i = 0; i < 60; i++
+      cur_tot_sleep += sched[i]
+      if cur_max_sleep < sched[i]
+        cur_max_sleep = sched[i]
+        cur_max_sleep_idx = i
+      ;;
+    ;;
+    if best_tot_sleep < cur_tot_sleep
+      sleepsum = key * cur_max_sleep_idx
+      best_tot_sleep = cur_tot_sleep
+    ;;
+    std.slfree(sched)
+  ;;
+  std.slfree(keys)
+  std.htfree(scheds)
+  std.slfree(sl)
+  std.put("{}\n", sleepsum)
+}
