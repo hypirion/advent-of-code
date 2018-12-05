@@ -9,6 +9,10 @@ any language twice.
 2. Julia and Fennel
 3. Mirah and Dart
 4. Myrddin and Factor
+5. Brainfuck<sup>†</sup>
+
+<sup>†</sup> Give me some time on that please, have a Python implementation in
+the meantime.
 
 # License
 
