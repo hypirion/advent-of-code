@@ -8,7 +8,7 @@ any language twice.
 1. Bash and Crystal
 2. Julia and Fennel
 3. Mirah and Dart
-4. Myrddin
+4. Myrddin and Factor
 
 # License
 
