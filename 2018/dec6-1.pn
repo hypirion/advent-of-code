@@ -127,9 +127,9 @@ pushnew = (xs, x):
   .
 
 hull = ()
-(bbox(1)-1000, bbox(3)+1000) each (y):
-  x = bbox(0)-1000
-  while (x <= bbox(2) + 1000):
+(bbox(1)-1, bbox(3)+1) each (y):
+  x = bbox(0)-1
+  while (x <= bbox(2) + 1):
     target = (x, y)
     c = closest(target)
     if (c != nil):
@@ -137,9 +137,9 @@ hull = ()
     x++.
   .
 
-(bbox(0)-1000, bbox(2)+1000) each (x):
-  y = bbox(1) - 1000
-  while (y <= bbox(3)+1000):
+(bbox(0)-1, bbox(2)+1) each (x):
+  y = bbox(1) - 1
+  while (y <= bbox(3)+1):
     target = (x, y)
     c = closest(target)
     if (c != nil):

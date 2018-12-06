@@ -10,7 +10,7 @@ any language twice.
 3. Mirah and Dart
 4. Myrddin and Factor
 5. Brainfuck<sup>†</sup> and Io
-6. Potion
+6. Potion and Elixir
 
 <sup>†</sup> Give me some time on that please, have a Python implementation in
 the meantime.
