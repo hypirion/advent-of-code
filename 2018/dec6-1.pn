@@ -1,0 +1,158 @@
+#!/usr/bin/env potion
+
+# A program to compute Advent Of Code, problem 6-1 2018.
+# Copyright (C) 2018 Jean Niklas L'orange
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+readall = ():
+  str = ''
+  nxt = read
+  while (nxt != nil):
+    str += nxt
+    nxt = read.
+  str.
+
+data = readall()
+
+is_num = (s):
+  x = s ord
+  if (x >= "0" ord && x <= "9" ord): true.
+  else: false..
+
+digit = (s):
+  x = s ord
+  x - "0" ord.
+
+parse_nums = (s):
+  numbers = ()
+  num = nil
+  s length times (i):
+    if (is_num(s(i))):
+      d = digit(s(i))
+      if (num == nil):
+         num = d.
+      else:
+         num = num * 10 + d..
+    else:
+      if (num != nil):
+        numbers append(num)
+        num = nil...
+  if (num != nil):
+    numbers append(num)
+    num = false.
+  numbers.
+
+nums = parse_nums(data)
+
+partition2 = (nums):
+  pairs = ()
+  half = nums length / 2
+  half times (i):
+     pair = (nums(2*i), nums(2*i+1))
+     pairs append(pair).
+  pairs.
+
+pts = partition2(nums)
+
+min = (a, b):
+  if (a < b): a.
+  else: b..
+
+max = (a, b): -min(-a, -b).
+
+bbox = pts(0) clone append(pts(0)(0)) append(pts(0)(1))
+
+pts each (pt):
+    bbox put(0, min(bbox(0), pt(0)))
+    bbox put(1, min(bbox(1), pt(1)))
+    bbox put(2, max(bbox(2), pt(0)))
+    bbox put(3, max(bbox(3), pt(1))).
+
+manhattan = (a, b):
+  dx = a(0) - b(0)
+  dy = a(1) - b(1)
+  dx abs + dy abs.
+
+closest = (target):
+  c = nil
+  dist = 1e+10
+  pts length times(i):
+    pt = pts(i)
+    cur = manhattan(pt, target)
+    if (cur < dist):
+      c = i
+      dist = cur.
+    elsif (cur == dist):
+      c = nil.
+    .
+  c.
+
+area = ()
+pts length times:
+  area append(0).
+
+y = bbox(1)
+
+# bbox(1) to bbox(3) (y): doesn't work unfortunately.
+while (y <= bbox(3)):
+  x = bbox(0)
+  while (x <= bbox(2)):
+    target = (x, y)
+    c = closest(target)
+    if (c != nil):
+      area put(c, area(c) + 1).
+    x++.
+  y++.
+
+# poor man's set
+pushnew = (xs, x):
+  # this is needed to avoid segfaults
+  if (xs length == 0):
+    xs append(x).
+  if (xs bsearch(x) < 0):
+    xs append(x)
+    xs ins_sort.
+  .
+
+hull = ()
+(bbox(1)-1000, bbox(3)+1000) each (y):
+  x = bbox(0)-1000
+  while (x <= bbox(2) + 1000):
+    target = (x, y)
+    c = closest(target)
+    if (c != nil):
+      pushnew(hull, c).
+    x++.
+  .
+
+(bbox(0)-1000, bbox(2)+1000) each (x):
+  y = bbox(1) - 1000
+  while (y <= bbox(3)+1000):
+    target = (x, y)
+    c = closest(target)
+    if (c != nil):
+      pushnew(hull, c).
+    y++.
+  .
+
+
+biggest_finite = 0
+pts length times(i):
+  a = area(i)
+  if (hull bsearch(i) < 0):
+    biggest_finite = max(biggest_finite, a).
+  .
+
+biggest_finite print a
