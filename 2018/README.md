@@ -11,7 +11,7 @@ any language twice.
 4. Myrddin and Factor
 5. Brainfuck<sup>†</sup> and Io
 6. Potion and Elixir
-7. Wren
+7. Wren and Frink
 
 <sup>†</sup> Give me some time on that please, have a Python implementation in
 the meantime.

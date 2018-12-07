@@ -1,0 +1,111 @@
+# Run with `java -cp frink.jar frink.parser.Frink -f dec7-2.frink < input.txt`
+
+// A program to compute Advent Of Code, problem 7-2 2018.
+// Copyright (C) 2018 Jean Niklas L'orange
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+pairs = new array
+line = input[""]
+while (line != undef)
+{
+   a = substr[line,5,6]
+   b = substr[line,36,37]
+   pairs.push[[a,b]]
+   line = input[""]
+}
+
+class G
+{
+  class var steps = new set
+  class var deps = new dict
+  class var rdeps = new dict
+  class var completedAt = new dict
+
+  class setup[pairs] :=
+  {
+    for kv = pairs
+    {
+      for s = kv
+        if not steps.contains[s]
+        {
+          steps.put[s]
+          deps@s = new set
+          rdeps@s = new set
+        }
+      k = kv@0
+      v = kv@1
+      rdeps@k.put[v]
+      deps@v.put[k]
+    }
+  }
+
+  class canRun[s] :=
+  {
+    if completedAt.containsKey[s]
+      return false
+    for dep = deps@s
+      if not completedAt.containsKey[dep]
+        return false
+    return true
+  }
+
+  class earliestTimeToRun[s] :=
+  {
+    highest = 0 seconds
+    for dep = deps@s
+      highest = max[highest, completedAt@dep]
+    return highest
+  }
+
+  class canRunAt[s, t] := canRun[s] && earliestTimeToRun[s] <= t
+
+  class timeTaken[s] := 1 minute + (chars[s]@0 - chars["A"]@0 + 1) seconds
+
+  class complete[s, time] := completedAt@s = time
+
+  class nextStep[] :=
+  {
+    earliest = 10000 seconds
+    for s = steps
+      if canRun[s]
+        earliest = min[earliest, earliestTimeToRun[s]]
+    best = "Z"
+    for s = steps
+      if canRunAt[s, earliest]
+        best = min[best, s]
+    return best
+  }
+}
+
+G.setup[pairs]
+
+workerReadyAt = new OrderedList
+for i = 1 to 5
+  workerReadyAt.insertAll[0 seconds]
+
+doneAt = 0 seconds
+
+while length[G.completedAt] < length[G.steps]
+{
+  s = G.nextStep[]
+  earliestWorker = workerReadyAt@0
+  workerReadyAt.removeValue[earliestWorker]
+  startWorkAt = max[earliestWorker, G.earliestTimeToRun[s]]
+  completesAt = startWorkAt + G.timeTaken[s]
+  doneAt = max[doneAt, completesAt]
+  workerReadyAt.insert[completesAt]
+  G.complete[s, completesAt]
+}
+println[doneAt]
