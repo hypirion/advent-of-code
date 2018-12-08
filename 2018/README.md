@@ -12,7 +12,7 @@ any language twice.
 5. Brainfuck<sup>†</sup> and Io
 6. Potion and Elixir
 7. Wren and Frink
-8. Terra
+8. Terra and Lua
 
 <sup>†</sup> Give me some time on that please, have a Python implementation in
 the meantime.
