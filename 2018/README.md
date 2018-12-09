@@ -13,6 +13,7 @@ any language twice.
 6. Potion and Elixir
 7. Wren and Frink
 8. Terra and Lua
+9. Squirrel
 
 <sup>†</sup> Give me some time on that please, have a Python implementation in
 the meantime.
