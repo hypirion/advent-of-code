@@ -1,0 +1,48 @@
+#!/usr/bin/env potion
+
+# A program to compute Advent Of Code, problem 1-1 2019.
+# Copyright (C) 2019 Jean Niklas L'orange
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+digit = (s):
+  x = s ord
+  x - "0" ord.
+
+is_num = (s):
+  x = s ord
+  if (x >= "0" ord && x <= "9" ord): true.
+  else: false..
+
+parse_num = (s):
+  num = 0
+  s length times (i):
+    if (is_num(s(i))):
+      d = digit(s(i))
+      num = num * 10 + d..
+  num.
+
+fuel_necessary = (n):
+  n / 3 - 2.
+
+total_fuel_needed = 0
+
+str_num = read
+while (str_num != nil):
+  num = parse_num(str_num)
+  total_fuel_needed += fuel_necessary(num)
+  str_num = read.
+
+total_fuel_needed print
+"\n" print
