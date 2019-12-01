@@ -1,6 +1,6 @@
-#!/usr/bin/env potion
+#!/usr/bin/env lily
 
-# A program to compute Advent Of Code, problem 1-1 2019.
+# A program to compute Advent Of Code, problem 1-2 2019.
 # Copyright (C) 2019 Jean Niklas L'orange
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,33 +16,26 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-digit = (s):
-  x = s ord
-  x - "0" ord.
+var nums : List[Integer] = []
 
-is_num = (s):
-  x = s ord
-  if (x >= "0" ord && x <= "9" ord): true.
-  else: false..
+stdin.each_line(|line|
+                  var maybe_num = line.encode().unwrap().strip("\n ").parse_i()
+                  if maybe_num.is_some() : {
+                     maybe_num.unwrap() |> nums.push
+                  })
 
-parse_num = (s):
-  num = 0
-  s length times (i):
-    if (is_num(s(i))):
-      d = digit(s(i))
-      num = num * 10 + d..
-  num.
+define fuel_needed(weight : Integer): Integer {
+  var fuel = weight / 3 - 2
+  if fuel <= 0: {
+    return 0
+  }
+  return fuel + fuel_needed(fuel)
+}
 
-fuel_necessary = (n):
-  n / 3 - 2.
+var total_fuel = 0
 
-total_fuel_needed = 0
+for i in 0...nums.size() - 1: {
+  total_fuel += fuel_needed(nums[i])
+}
 
-str_num = read
-while (str_num != nil):
-  num = parse_num(str_num)
-  total_fuel_needed += fuel_necessary(num)
-  str_num = read.
-
-total_fuel_needed print
-"\n" print
+print(total_fuel)
