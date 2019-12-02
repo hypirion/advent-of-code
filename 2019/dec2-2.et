@@ -1,0 +1,61 @@
+#!/usr/bin/env et
+
+# A program to compute Advent Of Code, problem 2-2 2019.
+# Copyright (C) 2019 Jean Niklas L'orange
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+import std.str;
+import std.vec;
+
+str_state = scan().split(',');
+initial_state = [];
+for i = 0; i < str_state.len(); i += 1 {
+  initial_state.push(str_state[i].to_int());
+}
+
+fn copy_state() {
+  state = [];
+  for i = 0; i < initial_state.len(); i += 1 {
+    state.push(initial_state[i]);
+  }
+  return state;
+}
+
+fn solve() {
+  for addr1 = 0; addr1 < 100; addr1 += 1 {
+    for addr2 = 0; addr2 < 100; addr2 += 1 {
+      state = copy_state();
+      state[1] = addr1;
+      state[2] = addr2;
+      for loc = 0; loc < state.len(); loc += 4 {
+        if state[loc] == 99 {
+          break;
+        }
+        if state[loc] == 1 {
+          state[state[loc+3]] = state[state[loc+1]] + state[state[loc+2]];
+        } else {
+          if state[loc] == 2 {
+            state[state[loc+3]] = state[state[loc+1]] * state[state[loc+2]];
+          }
+        }
+      }
+      if state[0] == 19690720 {
+        return addr1 * 100 + addr2;
+      }
+    }
+  }
+}
+
+println(solve());
