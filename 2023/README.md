@@ -9,7 +9,7 @@ do
 
 ```shell
 $ roc run dayN.roc < test.in
-$ roc run dayN.roc < day.in
+$ roc run dayN.roc < data.in
 ```
 
 There's a warning about Stdin not being used, but that's just a bug I presume.
